@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 module.exports = {
     db: {
       uri: 'mongodb+srv://bootcamp_Dominic:bjs02054@cluster0-xyhuz.mongodb.net/test?retryWrites=true&w=majority'
@@ -7,3 +8,6 @@ module.exports = {
     },
     port: 8080
   };
+=======
+
+>>>>>>> d440ce0bb1cf900c80a929e855ba23093d453e1e
