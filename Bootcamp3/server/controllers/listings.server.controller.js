@@ -3,7 +3,7 @@
 var mongoose = require('mongoose'), 
     Listing = require('../models/listings.server.model.js'),
     coordinates = require('./coordinates.server.controller.js');
-    
+    config = require('../config/config')
 /*
   In this file, you should use Mongoose queries in order to retrieve/add/remove/update listings.
   On an error you should send a 404 status code, as well as the error message. 
@@ -20,6 +20,7 @@ var mongoose = require('mongoose'),
   or
   https://adrianmejia.com/getting-started-with-node-js-modules-require-exports-imports-npm-and-beyond/
  */
+mongoose.connect(config.db.uri, { useNewUrlParser: true });
 
 /* Create a listing */
 exports.create = function(req, res) {
@@ -56,26 +57,55 @@ exports.read = function(req, res) {
 /* Update a listing - note the order in which this function is called by the router*/
 exports.update = function(req, res) {
   var listing = req.listing;
-
-  /* Replace the listings's properties with the new properties found in req.body */
- 
+  
+  /*Replace the listings's properties with the new properties found in req.body */
   /*save the coordinates (located in req.results if there is an address property) */
- 
-  /* Save the listing */
+  
+  listing.name = req.body.name;
+  listing.code = req.body.code;
+  listing.address = req.body.address;
+  //if the address includes latitude and longitude, include that
+  if(req.results)
+  {
+    listing.coordinates.latitude = req.results.lat;
+    listing.coordinates.longitude = req.results.lng;
+  }
 
+  /* Then save the listing */
+  listing.save(function(err) {
+    if(err) {
+      console.log(err);
+      res.status(400).send(err);
+    } else {
+      res.json(listing);
+      console.log(listing)
+    }
+  });
 };
 
 /* Delete a listing */
 exports.delete = function(req, res) {
   var listing = req.listing;
 
-  /* Add your code to remove the listins */
+  listing.remove(function(err)
+  {
+    if (err) throw err;
+
+    res.end();
+  });
 
 };
 
 /* Retreive all the directory listings, sorted alphabetically by listing code */
 exports.list = function(req, res) {
   /* Add your code */
+
+  Listing.find({}, function(err,data){
+    if(err) throw err;
+
+    console.log(JSON.stringify(data, null, 1));
+    res.send(data);
+  });
 };
 
 /* 
